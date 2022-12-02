@@ -11,3 +11,6 @@ calorie_totals = elven_snack_bundles.map do |elf|
 end
 
 puts "The elf carrying the most calories has #{calorie_totals.max} calories total"
+
+top_three = calorie_totals.max(3).sum
+puts "The three elves carrying the most calories are carrying #{top_three} calories in total"

@@ -14,10 +14,8 @@ class CargoCrane
     instructions = lines ? parse_instructions(lines) : parse_instructions(@lines)
     instructions.each do |inst|
       puts "performing operation: move #{inst[:quantity]} from #{inst[:origin_stack]} to #{inst[:destination_stack]}"
-      inst[:quantity].times do
-        crate = @stacks[inst[:origin_stack] - 1].shift
-        @stacks[inst[:destination_stack] - 1].prepend(crate)
-      end
+      to_move = @stacks[inst[:origin_stack] - 1].shift(inst[:quantity])
+      @stacks[inst[:destination_stack] - 1].prepend(*to_move)
     end
   end
   
@@ -100,7 +98,7 @@ class CargoCraneTest < Minitest::Test
     cargo_crane = CargoCrane.new(@input)
     cargo_crane.perform_operation!
     
-    expected_stacks = [['[C]'], ['[M]'], ['[Z]', '[N]', '[D]', '[P]']]
+    expected_stacks = [['[M]'], ['[C]'], ['[D]', '[N]', '[Z]', '[P]']]
     assert_equal(expected_stacks, cargo_crane.stacks)
   end
   
@@ -108,15 +106,15 @@ class CargoCraneTest < Minitest::Test
     cargo_crane = CargoCrane.new(@input)
     cargo_crane.perform_operation!
     
-    assert_equal('CMZ', cargo_crane.top_crates)
+    assert_equal('MCD', cargo_crane.top_crates)
   end
   
   def test_it_can_follow_new_instructions
     cargo_crane = CargoCrane.new(@input)
-    new_instructions = ['move 1 from 3 to 1', 'move 1 from 2 to 3']
+    new_instructions = ['move 2 from 2 to 1', 'move 1 from 2 to 3']
     cargo_crane.perform_operation!(new_instructions)
 
-    expected_stacks = [['[P]', '[N]', '[Z]'], ['[C]', '[M]'], ['[D]']]
+    expected_stacks = [['[D]', '[C]', '[N]', '[Z]'], [], ['[M]', '[P]']]
     assert_equal(expected_stacks, cargo_crane.stacks)
   end
 end
